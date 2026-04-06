@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community — Grounded Café</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>" />
+</head>
+<body>
+
+<!-- ═══════════════ NAVBAR ═══════════════ -->
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">Grounded<span>.</span></a>
+    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="community.html" class="active">Community</a></li>
+      <li><a href="cart.html">Cart</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="cart.html" class="cart-btn">
+        🛒 <span class="nav-btn-text">Cart</span>
+        <span class="cart-count" style="display:none">0</span>
+      </a>
+      <a href="menu.html" class="btn btn-primary btn-sm">Order Now</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ PAGE HEADER ═══════════════ -->
+<div class="page-header">
+  <div class="container">
+    <h1>Our Community</h1>
+    <p>Events, stories, and the people who make Grounded what it is.</p>
+  </div>
+</div>
+
+<!-- ═══════════════ EVENTS ═══════════════ -->
+<section class="section-pad">
+  <div class="container">
+    <div style="margin-bottom:2.5rem">
+      <p class="section-sub">✦ What's happening</p>
+      <h2 class="section-title">Upcoming Events</h2>
+      <p>From jazz mornings to latte art workshops — there's always something brewing.</p>
+    </div>
+    <div id="events-container">
+      <div class="page-loader">
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ GALLERY ═══════════════ -->
+<section class="section-pad" style="background:var(--bg-card)">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:2.5rem">
+      <p class="section-sub">✦ A glimpse inside</p>
+      <h2 class="section-title">Gallery</h2>
+      <p>Moments from our café, captured with love.</p>
+    </div>
+    <div id="gallery-container">
+      <div class="page-loader">
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ NEWSLETTER ═══════════════ -->
+<section class="section-pad" style="background:var(--primary);">
+  <div class="container text-center">
+    <h2 style="color:#fff;margin-bottom:0.5rem">Never Miss an Event</h2>
+    <p style="color:rgba(255,255,255,0.8);margin-bottom:1.5rem">Drop your email and we'll keep you in the loop on events, new menu items, and more.</p>
+    <div style="display:flex;gap:0.75rem;max-width:440px;margin:0 auto;flex-wrap:wrap;justify-content:center">
+      <input type="email" id="nl-email" class="form-control" placeholder="your@email.com" style="flex:1;min-width:200px" />
+      <button id="nl-btn" class="btn btn-primary" style="background:var(--accent)">Subscribe</button>
+    </div>
+    <p id="nl-msg" style="color:rgba(255,255,255,0.9);font-size:0.83rem;margin-top:0.75rem;display:none"></p>
+  </div>
+</section>
+
+<!-- ═══════════════ RSVP MODAL ═══════════════ -->
+<div class="modal-overlay" id="rsvp-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>RSVP for Event</h3>
+      <button class="modal-close" id="rsvp-modal-close">✕</button>
+    </div>
+    <p id="rsvp-event-title" style="font-weight:600;color:var(--text);margin-bottom:1.5rem;font-family:'Playfair Display',serif;font-size:1.1rem"></p>
+    <form id="rsvp-form">
+      <div class="form-group">
+        <label for="rsvp-name">Your Name *</label>
+        <input id="rsvp-name" class="form-control" type="text" placeholder="Jane Smith" required />
+      </div>
+      <div class="form-group">
+        <label for="rsvp-email">Email Address *</label>
+        <input id="rsvp-email" class="form-control" type="email" placeholder="jane@example.com" required />
+      </div>
+      <div style="display:flex;gap:0.75rem;margin-top:1rem">
+        <button type="button" class="btn btn-ghost" id="rsvp-cancel" style="flex:1">Cancel</button>
+        <button type="submit" class="btn btn-primary" style="flex:1">Confirm RSVP</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>Grounded<span>.</span></h3>
+        <p style="font-size:0.83rem;line-height:1.8;margin-bottom:1rem">A cozy corner for coffee lovers, thinkers, and wanderers.</p>
+        <p style="font-size:0.8rem">📍 42 Brew Lane, Artisan Quarter</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="menu.html">Menu</a></li>
+          <li><a href="community.html">Events</a></li>
+          <li><a href="cart.html">Cart</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Hours</h4>
+        <ul>
+          <li><a href="#">Mon–Fri: 7am–9pm</a></li>
+          <li><a href="#">Sat: 8am–10pm</a></li>
+          <li><a href="#">Sun: 9am–7pm</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Admin</h4>
+        <ul>
+          <li><a href="/mnt/user-data/outputs/cafe-website/admin/index.html">Dashboard</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 Grounded Café</span>
+      <span>Made with ☕</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="cart.js"></script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+
+  const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  let currentEventId = null;
+
+  // ── Load Events ──
+  async function loadEvents() {
+    const container = document.getElementById('events-container');
+
+    const { data: events, error } = await db
+      .from('events').select('*')
+      .gte('date', new Date().toISOString())
+      .order('date');
+
+    if (error || !events?.length) {
+      container.innerHTML = `<p style="text-align:center;color:var(--text-muted);padding:3rem">No upcoming events yet — check back soon!</p>`;
+      return;
+    }
+
+    const { data: rsvpData } = await db.from('rsvps').select('event_id');
+    const counts = {};
+    (rsvpData || []).forEach(r => { counts[r.event_id] = (counts[r.event_id] || 0) + 1; });
+
+    container.innerHTML = `<div class="events-grid">${events.map(e => renderEvent(e, counts[e.id] || 0)).join('')}</div>`;
+
+    container.querySelectorAll('.rsvp-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentEventId = btn.dataset.id;
+        document.getElementById('rsvp-event-title').textContent = btn.dataset.title;
+        document.getElementById('rsvp-form').reset();
+        document.getElementById('rsvp-modal').classList.add('open');
+      });
+    });
+  }
+
+  function renderEvent(e, count) {
+    const d = new Date(e.date);
+    const ds = d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+    const ts = d.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+    const left = e.capacity - count;
+    return `
+      <div class="card event-card">
+        <div class="event-date-block">📅 ${ds} · ${ts}</div>
+        <h3 class="event-title">${e.title}</h3>
+        <p class="event-desc">${e.description || ''}</p>
+        <div class="event-meta">
+          ${e.location ? `<span class="tag">📍 ${e.location}</span>` : '<span></span>'}
+          <span class="rsvp-count">${count} / ${e.capacity} going</span>
+        </div>
+        <div style="margin-top:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+          ${left > 0
+            ? `<button class="btn btn-primary btn-sm rsvp-btn" data-id="${e.id}" data-title="${e.title}">RSVP Now</button>`
+            : `<span class="badge badge-muted">Event Full</span>`}
+          <span style="font-size:0.77rem;color:var(--text-muted)">${left > 0 ? `${left} spots left` : ''}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // ── Load Gallery ──
+  async function loadGallery() {
+    const container = document.getElementById('gallery-container');
+    const { data } = await db.from('gallery').select('*').order('created_at', { ascending: false });
+
+    if (!data?.length) {
+      container.innerHTML = `<p style="text-align:center;color:var(--text-muted)">Gallery coming soon.</p>`;
+      return;
+    }
+
+    container.innerHTML = `<div class="gallery-grid">${data.map(img => `
+      <div class="gallery-item">
+        <img src="${img.image_url}" alt="${img.caption || 'Gallery image'}" loading="lazy" />
+        ${img.caption ? `<div class="gallery-caption">${img.caption}</div>` : ''}
+      </div>
+    `).join('')}</div>`;
+  }
+
+  // ── RSVP ──
+  document.getElementById('rsvp-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const name  = document.getElementById('rsvp-name').value.trim();
+    const email = document.getElementById('rsvp-email').value.trim();
+    const btn   = e.target.querySelector('button[type="submit"]');
+
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    const { error } = await db.from('rsvps').insert({
+      event_id: currentEventId, user_name: name, user_email: email
+    });
+
+    btn.disabled = false; btn.textContent = 'Confirm RSVP';
+
+    if (error) {
+      Toast.show(error.code === '23505' ? 'Already RSVP\'d for this event!' : 'Failed to RSVP. Try again.', error.code === '23505' ? 'info' : 'error');
+      return;
+    }
+
+    document.getElementById('rsvp-modal').classList.remove('open');
+    Toast.show('🎉 You\'re on the list! See you there.', 'success');
+    loadEvents();
+  });
+
+  document.getElementById('rsvp-modal-close').addEventListener('click', () => document.getElementById('rsvp-modal').classList.remove('open'));
+  document.getElementById('rsvp-cancel').addEventListener('click', () => document.getElementById('rsvp-modal').classList.remove('open'));
+  document.getElementById('rsvp-modal').addEventListener('click', e => { if (e.target.id === 'rsvp-modal') document.getElementById('rsvp-modal').classList.remove('open'); });
+
+  // ── Newsletter (simple UI feedback) ──
+  document.getElementById('nl-btn').addEventListener('click', () => {
+    const email = document.getElementById('nl-email').value.trim();
+    if (!email || !email.includes('@')) { Toast.show('Please enter a valid email.', 'error'); return; }
+    const msg = document.getElementById('nl-msg');
+    document.getElementById('nl-email').value = '';
+    msg.textContent = '✓ You\'re subscribed! We\'ll be in touch.';
+    msg.style.display = 'block';
+  });
+
+  loadEvents();
+  loadGallery();
+</script>
+</body>
+</html>

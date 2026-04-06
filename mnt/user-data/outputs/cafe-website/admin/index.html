@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Grounded Café</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>" />
+  <style>
+    body { background: #F5F1EB; }
+    .tab-btn { padding: .5rem 1.2rem; border-radius:50px; border:1.5px solid var(--border); background:transparent; font-size:.83rem; font-weight:600; color:var(--text-muted); cursor:pointer; transition:var(--transition); }
+    .tab-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+    .toggle-switch { position:relative; display:inline-block; width:36px; height:20px; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; inset:0; background:#ccc; border-radius:20px; transition:.3s; cursor:pointer; }
+    .toggle-slider:before { content:''; position:absolute; width:14px; height:14px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.3s; }
+    input:checked + .toggle-slider { background:var(--accent); }
+    input:checked + .toggle-slider:before { transform:translateX(16px); }
+    @media(max-width:760px){ .admin-sidebar{display:none} .admin-main{padding:1rem} .admin-stats{grid-template-columns:1fr 1fr} }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN PAGE ═══════════════ -->
+<div id="login-page" class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">Grounded<span>.</span></div>
+    <p class="login-sub">Admin Dashboard · Sign in to continue</p>
+    <div class="form-group">
+      <label for="login-email">Email</label>
+      <input id="login-email" type="email" class="form-control" placeholder="example@gmail.com"/>
+    </div>
+    <div class="form-group">
+      <label for="login-pass">Password</label>
+      <input id="login-pass" type="password" class="form-control" placeholder="••••••••"/>
+    </div>
+    <button id="login-btn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:.5rem">
+      Sign In
+    </button>
+    <p id="login-error" style="color:var(--accent);font-size:.82rem;margin-top:.75rem;display:none"></p>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-top:1.5rem;text-align:center">
+      <a href="/index.html" style="color:var(--primary)">← Back to website</a>
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════ ADMIN DASHBOARD ═══════════════ -->
+<div id="admin-page" style="display:none;">
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-logo">Grounded<span>.</span><br/><small style="font-size:.7rem;font-weight:400;color:rgba(255,255,255,.5)">Admin Panel</small></div>
+    <nav class="sidebar-nav">
+      <a href="#" class="sidebar-link active" data-tab="dashboard">📊 Dashboard</a>
+      <a href="#" class="sidebar-link" data-tab="menu">☕ Menu Items</a>
+      <a href="#" class="sidebar-link" data-tab="orders">📦 Orders</a>
+      <a href="#" class="sidebar-link" data-tab="events">📅 Events</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button id="logout-btn" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;color:rgba(255,255,255,.7)">Sign Out</button>
+      <p style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:.5rem;text-align:center" id="admin-email-display"></p>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="admin-main">
+
+    <!-- ── DASHBOARD TAB ── -->
+    <div class="tab-panel active" id="tab-dashboard">
+      <div class="admin-header">
+        <h2>Dashboard</h2>
+        <p>Overview of your café at a glance.</p>
+      </div>
+      <div class="admin-stats">
+        <div class="stat-card"><div class="stat-icon">☕</div><div class="stat-num" id="s-menu">—</div><div class="stat-label">Menu Items</div></div>
+        <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-num" id="s-orders">—</div><div class="stat-label">Total Orders</div></div>
+        <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-num" id="s-events">—</div><div class="stat-label">Upcoming Events</div></div>
+        <div class="stat-card"><div class="stat-icon">🙋</div><div class="stat-num" id="s-rsvps">—</div><div class="stat-label">Total RSVPs</div></div>
+      </div>
+      <div class="card" style="padding:1.5rem;">
+        <h3 style="font-family:'Playfair Display',serif;margin-bottom:1rem;">Recent Orders</h3>
+        <div id="recent-orders-table"></div>
+      </div>
+    </div>
+
+    <!-- ── MENU TAB ── -->
+    <div class="tab-panel" id="tab-menu">
+      <div class="toolbar">
+        <div class="admin-header" style="margin:0"><h2>Menu Items</h2><p>Add, edit, or remove menu items.</p></div>
+        <button class="btn btn-primary" id="add-menu-btn">+ Add Item</button>
+      </div>
+      <div class="card">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Available</th><th>Actions</th></tr></thead>
+            <tbody id="menu-table-body"><tr><td colspan="5" style="text-align:center;padding:2rem">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ORDERS TAB ── -->
+    <div class="tab-panel" id="tab-orders">
+      <div class="admin-header"><h2>Orders</h2><p>All customer orders.</p></div>
+      <div class="card">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Order ID</th><th>Customer</th><th>Email</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+            <tbody id="orders-table-body"><tr><td colspan="7" style="text-align:center;padding:2rem">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EVENTS TAB ── -->
+    <div class="tab-panel" id="tab-events">
+      <div class="toolbar">
+        <div class="admin-header" style="margin:0"><h2>Events</h2><p>Manage upcoming events.</p></div>
+        <button class="btn btn-primary" id="add-event-btn">+ Add Event</button>
+      </div>
+      <div class="card">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Title</th><th>Date</th><th>Location</th><th>Capacity</th><th>RSVPs</th><th>Actions</th></tr></thead>
+            <tbody id="events-table-body"><tr><td colspan="6" style="text-align:center;padding:2rem">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</div>
+
+<!-- ═══════════════ MENU MODAL ═══════════════ -->
+<div class="modal-overlay" id="menu-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="menu-modal-title">Add Menu Item</h3>
+      <button class="modal-close" id="menu-modal-close">✕</button>
+    </div>
+    <form id="menu-form">
+      <input type="hidden" id="menu-item-id" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Name *</label>
+          <input id="m-name" class="form-control" type="text" required placeholder="e.g. Vanilla Latte" />
+        </div>
+        <div class="form-group">
+          <label>Category *</label>
+          <select id="m-cat" class="form-control" required>
+            <option value="">— select —</option>
+            <option>Coffee</option><option>Tea</option>
+            <option>Food</option><option>Pastries</option><option>Drinks</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="m-desc" class="form-control" rows="3" placeholder="What makes this item special?"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Price ($) *</label>
+          <input id="m-price" class="form-control" type="number" step="0.01" min="0" required placeholder="4.50" />
+        </div>
+        <div class="form-group">
+          <label>Image URL</label>
+          <input id="m-img" class="form-control" type="url" placeholder="https://…" />
+        </div>
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:.75rem">
+        <label class="toggle-switch"><input type="checkbox" id="m-avail" checked /><span class="toggle-slider"></span></label>
+        <span style="font-size:.88rem;font-weight:600">Available for ordering</span>
+      </div>
+      <div style="display:flex;gap:.75rem;margin-top:1rem">
+        <button type="button" class="btn btn-ghost" id="menu-modal-cancel" style="flex:1">Cancel</button>
+        <button type="submit" class="btn btn-primary" style="flex:1" id="menu-save-btn">Save Item</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════ EVENT MODAL ═══════════════ -->
+<div class="modal-overlay" id="event-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="event-modal-title">Add Event</h3>
+      <button class="modal-close" id="event-modal-close">✕</button>
+    </div>
+    <form id="event-form">
+      <input type="hidden" id="event-item-id" />
+      <div class="form-group">
+        <label>Title *</label>
+        <input id="e-title" class="form-control" type="text" required placeholder="e.g. Morning Jazz & Brew" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date & Time *</label>
+          <input id="e-date" class="form-control" type="datetime-local" required />
+        </div>
+        <div class="form-group">
+          <label>Capacity</label>
+          <input id="e-cap" class="form-control" type="number" min="1" value="40" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Location</label>
+        <input id="e-loc" class="form-control" type="text" placeholder="e.g. Main Floor" />
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="e-desc" class="form-control" rows="3" placeholder="Tell guests what to expect…"></textarea>
+      </div>
+      <div style="display:flex;gap:.75rem;margin-top:1rem">
+        <button type="button" class="btn btn-ghost" id="event-modal-cancel" style="flex:1">Cancel</button>
+        <button type="submit" class="btn btn-primary" style="flex:1">Save Event</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="cart.js"></script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  import { SUPABASE_URL, SUPABASE_ANON_KEY } from 'config.js';
+
+  const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ═══════ AUTH ═══════
+  async function checkSession() {
+    const { data: { session } } = await db.auth.getSession();
+    if (session) showDashboard(session.user);
+    else showLogin();
+  }
+
+  function showLogin()  { document.getElementById('login-page').style.display = 'flex'; document.getElementById('admin-page').style.display = 'none'; }
+  function showDashboard(user) {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('admin-page').style.display = 'block';
+    document.getElementById('admin-email-display').textContent = user.email;
+    loadStats(); loadMenuItems(); loadOrders(); loadEvents();
+  }
+
+  document.getElementById('login-btn').addEventListener('click', async () => {
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-pass').value;
+    const btn   = document.getElementById('login-btn');
+    const err   = document.getElementById('login-error');
+
+    btn.disabled = true; btn.textContent = 'Signing in…'; err.style.display = 'none';
+
+    const { data, error } = await db.auth.signInWithPassword({ email, password: pass });
+
+    btn.disabled = false; btn.textContent = 'Sign In';
+
+    if (error) { err.textContent = error.message; err.style.display = 'block'; return; }
+    showDashboard(data.user);
+  });
+
+  document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await db.auth.signOut();
+    showLogin();
+  });
+
+  // ═══════ TAB NAV ═══════
+  document.querySelectorAll('.sidebar-link[data-tab]').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      link.classList.add('active');
+      document.getElementById(`tab-${link.dataset.tab}`).classList.add('active');
+    });
+  });
+
+  // ═══════ STATS ═══════
+  async function loadStats() {
+    const [m, o, e, r] = await Promise.all([
+      db.from('menu_items').select('id', { count:'exact', head:true }),
+      db.from('orders').select('id', { count:'exact', head:true }),
+      db.from('events').select('id', { count:'exact', head:true }).gte('date', new Date().toISOString()),
+      db.from('rsvps').select('id', { count:'exact', head:true }),
+    ]);
+    document.getElementById('s-menu').textContent   = m.count ?? 0;
+    document.getElementById('s-orders').textContent = o.count ?? 0;
+    document.getElementById('s-events').textContent = e.count ?? 0;
+    document.getElementById('s-rsvps').textContent  = r.count ?? 0;
+
+    // Recent orders table in dashboard
+    const { data: recent } = await db.from('orders').select('*').order('created_at', { ascending:false }).limit(5);
+    document.getElementById('recent-orders-table').innerHTML = recent?.length
+      ? `<table class="admin-table"><thead><tr><th>ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>
+        ${recent.map(o => `<tr>
+          <td style="font-family:monospace;font-size:.78rem">${o.id.split('-')[0].toUpperCase()}</td>
+          <td>${o.customer_name || '—'}</td>
+          <td>$${Number(o.total_price).toFixed(2)}</td>
+          <td><span class="status-badge status-${o.status === 'pending' ? 'pending' : 'confirmed'}">${o.status}</span></td>
+          <td>${new Date(o.created_at).toLocaleDateString()}</td>
+        </tr>`).join('')}
+        </tbody></table>`
+      : '<p style="color:var(--text-muted);text-align:center;padding:1rem">No orders yet.</p>';
+  }
+
+  // ═══════ MENU CRUD ═══════
+  async function loadMenuItems() {
+    const body = document.getElementById('menu-table-body');
+    const { data } = await db.from('menu_items').select('*').order('category').order('name');
+    if (!data?.length) { body.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">No menu items yet.</td></tr>'; return; }
+
+    body.innerHTML = data.map(item => `<tr>
+      <td><strong>${item.name}</strong><br/><small style="color:var(--text-muted)">${item.description?.slice(0,60) || ''}…</small></td>
+      <td><span class="tag">${item.category}</span></td>
+      <td>$${Number(item.price).toFixed(2)}</td>
+      <td>
+        <label class="toggle-switch">
+          <input type="checkbox" ${item.available ? 'checked' : ''} onchange="toggleAvail('${item.id}', this.checked)" />
+          <span class="toggle-slider"></span>
+        </label>
+      </td>
+      <td style="display:flex;gap:.5rem;flex-wrap:wrap;padding:.5rem 1rem">
+        <button class="btn btn-ghost btn-sm" onclick="editMenuItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteMenuItem('${item.id}')">Delete</button>
+      </td>
+    </tr>`).join('');
+  }
+
+  window.toggleAvail = async (id, val) => {
+    await db.from('menu_items').update({ available: val }).eq('id', id);
+    Toast.show(`Item marked as ${val ? 'available' : 'sold out'}`, 'info');
+  };
+
+  window.editMenuItem = (item) => {
+    document.getElementById('menu-modal-title').textContent = 'Edit Menu Item';
+    document.getElementById('menu-item-id').value  = item.id;
+    document.getElementById('m-name').value  = item.name;
+    document.getElementById('m-cat').value   = item.category;
+    document.getElementById('m-desc').value  = item.description || '';
+    document.getElementById('m-price').value = item.price;
+    document.getElementById('m-img').value   = item.image_url || '';
+    document.getElementById('m-avail').checked = item.available;
+    document.getElementById('menu-modal').classList.add('open');
+  };
+
+  window.deleteMenuItem = async (id) => {
+    if (!confirm('Delete this menu item?')) return;
+    await db.from('menu_items').delete().eq('id', id);
+    Toast.show('Item deleted', 'info');
+    loadMenuItems(); loadStats();
+  };
+
+  document.getElementById('add-menu-btn').addEventListener('click', () => {
+    document.getElementById('menu-modal-title').textContent = 'Add Menu Item';
+    document.getElementById('menu-form').reset();
+    document.getElementById('menu-item-id').value = '';
+    document.getElementById('m-avail').checked = true;
+    document.getElementById('menu-modal').classList.add('open');
+  });
+
+  document.getElementById('menu-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const id   = document.getElementById('menu-item-id').value;
+    const data = {
+      name:        document.getElementById('m-name').value.trim(),
+      category:    document.getElementById('m-cat').value,
+      description: document.getElementById('m-desc').value.trim(),
+      price:       parseFloat(document.getElementById('m-price').value),
+      image_url:   document.getElementById('m-img').value.trim() || null,
+      available:   document.getElementById('m-avail').checked,
+    };
+
+    const btn = document.getElementById('menu-save-btn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    if (id) {
+      await db.from('menu_items').update(data).eq('id', id);
+      Toast.show('Item updated!', 'success');
+    } else {
+      await db.from('menu_items').insert(data);
+      Toast.show('Item added!', 'success');
+    }
+
+    btn.disabled = false; btn.textContent = 'Save Item';
+    document.getElementById('menu-modal').classList.remove('open');
+    loadMenuItems(); loadStats();
+  });
+
+  ['menu-modal-close','menu-modal-cancel'].forEach(id => {
+    document.getElementById(id).addEventListener('click', () => document.getElementById('menu-modal').classList.remove('open'));
+  });
+
+  // ═══════ ORDERS ═══════
+  async function loadOrders() {
+    const body = document.getElementById('orders-table-body');
+    const { data } = await db.from('orders').select('*').order('created_at', { ascending:false });
+    if (!data?.length) { body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted)">No orders yet.</td></tr>'; return; }
+
+    body.innerHTML = data.map(o => `<tr>
+      <td style="font-family:monospace;font-size:.78rem">${o.id.split('-')[0].toUpperCase()}</td>
+      <td>${o.customer_name || '—'}</td>
+      <td>${o.customer_email || '—'}</td>
+      <td><strong>$${Number(o.total_price).toFixed(2)}</strong></td>
+      <td><span class="status-badge status-${o.status === 'pending' ? 'pending' : 'confirmed'}">${o.status}</span></td>
+      <td>${new Date(o.created_at).toLocaleDateString()}</td>
+      <td>
+        ${o.status === 'pending'
+          ? `<button class="btn btn-success btn-sm" onclick="confirmOrder('${o.id}')">Confirm</button>`
+          : `<span style="color:var(--text-muted);font-size:.8rem">✓ Done</span>`}
+      </td>
+    </tr>`).join('');
+  }
+
+  window.confirmOrder = async (id) => {
+    await db.from('orders').update({ status: 'confirmed' }).eq('id', id);
+    Toast.show('Order confirmed!', 'success');
+    loadOrders(); loadStats();
+  };
+
+  // ═══════ EVENTS CRUD ═══════
+  async function loadEvents() {
+    const body = document.getElementById('events-table-body');
+    const { data: events } = await db.from('events').select('*').order('date');
+    const { data: rsvpData } = await db.from('rsvps').select('event_id');
+    const counts = {};
+    (rsvpData || []).forEach(r => { counts[r.event_id] = (counts[r.event_id] || 0) + 1; });
+
+    if (!events?.length) { body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">No events yet.</td></tr>'; return; }
+
+    body.innerHTML = events.map(e => `<tr>
+      <td><strong>${e.title}</strong></td>
+      <td>${new Date(e.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
+      <td>${e.location || '—'}</td>
+      <td>${e.capacity}</td>
+      <td><strong>${counts[e.id] || 0}</strong></td>
+      <td style="display:flex;gap:.5rem;padding:.5rem 1rem">
+        <button class="btn btn-ghost btn-sm" onclick="editEvent(${JSON.stringify(e).replace(/"/g,'&quot;')})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteEvent('${e.id}')">Delete</button>
+      </td>
+    </tr>`).join('');
+  }
+
+  window.editEvent = (e) => {
+    document.getElementById('event-modal-title').textContent = 'Edit Event';
+    document.getElementById('event-item-id').value = e.id;
+    document.getElementById('e-title').value = e.title;
+    document.getElementById('e-date').value  = new Date(e.date).toISOString().slice(0,16);
+    document.getElementById('e-cap').value   = e.capacity;
+    document.getElementById('e-loc').value   = e.location || '';
+    document.getElementById('e-desc').value  = e.description || '';
+    document.getElementById('event-modal').classList.add('open');
+  };
+
+  window.deleteEvent = async (id) => {
+    if (!confirm('Delete this event?')) return;
+    await db.from('events').delete().eq('id', id);
+    Toast.show('Event deleted', 'info');
+    loadEvents(); loadStats();
+  };
+
+  document.getElementById('add-event-btn').addEventListener('click', () => {
+    document.getElementById('event-modal-title').textContent = 'Add Event';
+    document.getElementById('event-form').reset();
+    document.getElementById('event-item-id').value = '';
+    document.getElementById('event-modal').classList.add('open');
+  });
+
+  document.getElementById('event-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const id   = document.getElementById('event-item-id').value;
+    const data = {
+      title:       document.getElementById('e-title').value.trim(),
+      date:        new Date(document.getElementById('e-date').value).toISOString(),
+      capacity:    parseInt(document.getElementById('e-cap').value),
+      location:    document.getElementById('e-loc').value.trim() || null,
+      description: document.getElementById('e-desc').value.trim() || null,
+    };
+
+    if (id) {
+      await db.from('events').update(data).eq('id', id);
+      Toast.show('Event updated!', 'success');
+    } else {
+      await db.from('events').insert(data);
+      Toast.show('Event added!', 'success');
+    }
+
+    document.getElementById('event-modal').classList.remove('open');
+    loadEvents(); loadStats();
+  });
+
+  ['event-modal-close','event-modal-cancel'].forEach(id => {
+    document.getElementById(id).addEventListener('click', () => document.getElementById('event-modal').classList.remove('open'));
+  });
+
+  checkSession();
+</script>
+</body>
+</html>

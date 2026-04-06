@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — Grounded Café</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>" />
+</head>
+<body>
+
+<!-- ═══════════════ NAVBAR ═══════════════ -->
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">Grounded<span>.</span></a>
+    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="community.html">Community</a></li>
+      <li><a href="cart.html">Cart</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="cart.html" class="cart-btn">
+        🛒 <span class="nav-btn-text">Cart</span>
+        <span class="cart-count" style="display:none">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ PAGE HEADER ═══════════════ -->
+<div class="page-header">
+  <div class="container">
+    <h1>Checkout</h1>
+    <p>Almost there! Confirm your order details below.</p>
+  </div>
+</div>
+
+<!-- ═══════════════ CHECKOUT ═══════════════ -->
+<div class="container">
+
+  <!-- Empty cart redirect -->
+  <div id="empty-redirect" style="display:none;text-align:center;padding:4rem">
+    <p style="margin-bottom:1rem">Nothing to checkout! Add some items first.</p>
+    <a href="menu.html" class="btn btn-primary">Go to Menu</a>
+  </div>
+
+  <!-- Success screen -->
+  <div id="success-screen" class="success-screen" style="display:none">
+    <div class="success-icon">🎉</div>
+    <h2 style="font-family:'Playfair Display',serif;margin-bottom:0.5rem">Order Confirmed!</h2>
+    <p style="margin-bottom:0.5rem">Your order #<strong id="order-id-display"></strong> has been received.</p>
+    <p style="margin-bottom:2rem">Please come to the counter to pick it up. We'll have it ready shortly!</p>
+    <a href="menu.html" class="btn btn-primary">Order Again →</a>
+  </div>
+
+  <!-- Checkout form -->
+  <div id="checkout-layout" class="checkout-layout" style="display:none">
+
+    <!-- Left: Form -->
+    <div>
+      <!-- Contact Details -->
+      <div class="checkout-section">
+        <h3 class="checkout-section-title">Contact Details</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="c-name">Full Name *</label>
+            <input id="c-name" class="form-control" type="text" placeholder="Jane Smith" required />
+          </div>
+          <div class="form-group">
+            <label for="c-email">Email Address *</label>
+            <input id="c-email" class="form-control" type="email" placeholder="jane@example.com" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="c-phone">Phone (optional)</label>
+          <input id="c-phone" class="form-control" type="tel" placeholder="+1 (555) 000-0000" />
+        </div>
+      </div>
+
+      <!-- Pickup Info -->
+      <div class="checkout-section">
+        <h3 class="checkout-section-title">Pickup Information</h3>
+        <div style="display:flex;gap:1rem;background:#FAF8F4;border-radius:var(--radius);padding:1rem;align-items:flex-start;">
+          <span style="font-size:1.5rem">📍</span>
+          <div>
+            <strong style="font-size:0.9rem">Grounded Café Counter</strong><br/>
+            <span style="font-size:0.82rem;color:var(--text-muted)">42 Brew Lane, Artisan Quarter · Open 7am–9pm</span>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:1rem">
+          <label for="c-time">Preferred Pickup Time</label>
+          <select id="c-time" class="form-control">
+            <option value="">As soon as possible</option>
+            <option>In 15 minutes</option>
+            <option>In 30 minutes</option>
+            <option>In 1 hour</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="c-notes">Special Instructions</label>
+          <textarea id="c-notes" class="form-control" rows="3" placeholder="Oat milk instead, extra shot, etc."></textarea>
+        </div>
+      </div>
+
+      <!-- Payment Notice -->
+      <div class="checkout-section" style="background:#FAF8F4">
+        <h3 class="checkout-section-title">Payment</h3>
+        <p style="display:flex;align-items:center;gap:0.5rem;font-size:0.88rem;color:var(--text-muted)">
+          💳 Payment is collected at pickup. We accept cash, card, and contactless.
+        </p>
+      </div>
+    </div>
+
+    <!-- Right: Summary -->
+    <div>
+      <div class="order-summary">
+        <h3 class="summary-title">Order Summary</h3>
+        <div id="checkout-items" style="margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:1rem"></div>
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="co-subtotal">$0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>Tax (10%)</span>
+          <span id="co-tax">$0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>Pickup</span>
+          <span>FREE</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span id="co-total">$0.00</span>
+        </div>
+        <button id="place-order-btn" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:1.2rem">
+          Place Order →
+        </button>
+        <p style="font-size:0.75rem;color:var(--text-muted);text-align:center;margin-top:0.75rem">
+          🔒 Your info is safe with us. Pay at counter.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<br/><br/>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0;">
+      <span>© 2024 Grounded Café</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="cart.js"></script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+
+  const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const emojis = { Coffee:'☕', Tea:'🍵', Food:'🥗', Pastries:'🥐', Drinks:'🧃' };
+
+  function initCheckout() {
+    const items = Cart.get();
+    if (!items.length) {
+      document.getElementById('empty-redirect').style.display = 'block';
+      return;
+    }
+
+    document.getElementById('checkout-layout').style.display = 'grid';
+    const { subtotal, tax, total } = Cart.totals();
+
+    document.getElementById('checkout-items').innerHTML = items.map(i => `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;font-size:0.85rem">
+        <span>${emojis[i.category] || '🍽️'} ${i.name} × ${i.quantity}</span>
+        <span style="font-weight:600">$${(i.price * i.quantity).toFixed(2)}</span>
+      </div>
+    `).join('');
+
+    document.getElementById('co-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('co-tax').textContent      = `$${tax.toFixed(2)}`;
+    document.getElementById('co-total').textContent    = `$${total.toFixed(2)}`;
+  }
+
+  document.getElementById('place-order-btn').addEventListener('click', async () => {
+    const name  = document.getElementById('c-name').value.trim();
+    const email = document.getElementById('c-email').value.trim();
+    const items = Cart.get();
+
+    if (!name || !email) { Toast.show('Please fill in your name and email.', 'error'); return; }
+    if (!items.length)   { Toast.show('Your cart is empty!', 'error'); return; }
+
+    const btn = document.getElementById('place-order-btn');
+    btn.disabled = true;
+    btn.innerHTML = `<span style="display:inline-flex;gap:4px"><span class="loading-dots"><span></span><span></span><span></span></span></span> Placing order…`;
+
+    const { subtotal, tax, total } = Cart.totals();
+
+    // Create order
+    const { data: order, error: orderErr } = await db.from('orders').insert({
+      customer_name:  name,
+      customer_email: email,
+      total_price:    total,
+      status:         'pending',
+    }).select().single();
+
+    if (orderErr) {
+      Toast.show('Failed to place order. Please try again.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Place Order →';
+      return;
+    }
+
+    // Insert order items
+    const orderItems = items.map(i => ({
+      order_id:   order.id,
+      item_id:    i.id,
+      item_name:  i.name,
+      item_price: i.price,
+      quantity:   i.quantity,
+    }));
+
+    await db.from('order_items').insert(orderItems);
+
+    // Success
+    Cart.clear();
+    document.getElementById('checkout-layout').style.display = 'none';
+    document.getElementById('order-id-display').textContent = order.id.split('-')[0].toUpperCase();
+    document.getElementById('success-screen').style.display = 'block';
+  });
+
+  initCheckout();
+</script>
+</body>
+</html>
